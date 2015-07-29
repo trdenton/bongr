@@ -14,14 +14,14 @@ Mp3Player::Mp3Player(int rx, int tx)
 
 bool Mp3Player::init()
 {
-//	ser = SoftwareSerial(rx,tx);
+
 	begin(9600);
 	delay(100);
 	if (SetPlayMode(PLAYMODE_SINGLE)!=true)
 	{
 
 		return false;
-		//TODO error handling
+
 	}
 	PauseResume();
 	return true;
