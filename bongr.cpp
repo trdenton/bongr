@@ -1,6 +1,7 @@
 #include "SPI.h"
 #include "DMD.h"
 #include "TimerOne.h"
+#include "mp3.h"
 #include "Arial_black_16.h"
 // you can remove the fonts if unused
 #include "SystemFont5x7.h"
@@ -24,6 +25,8 @@ void setup()
 
    dmd.clearScreen( true );
 /* true is normal (all pixels off), false is negative (all pixels on) */
+
+   mp3.init();
 }
 
 void loop()
