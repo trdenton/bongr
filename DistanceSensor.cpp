@@ -38,7 +38,7 @@ float DistanceSensor::measure()
 
 	duration = pulseIn(echoPin,HIGH);
 
-	distance = (duration/2) / 29.1;
+	distance = ((float)duration/2.0) / 29.1;
 
 	return distance;
 }
