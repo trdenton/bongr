@@ -43,10 +43,10 @@ float DistanceSensor::measure()
 	return distance;
 }
 
-DistanceSensor d1(2,3);
-DistanceSensor d2(2,3);
-DistanceSensor d3(2,3);
-DistanceSensor d4(2,3);
+DistanceSensor d1(A0,A1);
+DistanceSensor d2(A2,A3);
+DistanceSensor d3(A4,A5);
+DistanceSensor d4(3,2);
 
 
 

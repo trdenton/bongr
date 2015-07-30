@@ -36,15 +36,15 @@ void setup()
    dmd.clearScreen( true );
 /* true is normal (all pixels off), false is negative (all pixels on) */
 
-   Serial.begin(9600);
-   Serial.println("power on");
+//   Serial.begin(9600);
+//   Serial.println("power on");
    delay(1000);
-   Serial.println("init");
+//   Serial.println("init");
 
 
    if (mp3.init()==false)
    {
-	   Serial.println("wtf 1");
+//	   Serial.println("wtf 1");
    }
 
 //   if (mp3.SetPlayMode(PLAYMODE_SINGLE)==false)
@@ -67,11 +67,13 @@ void setup()
 
 //   mp3.PauseResume();
 
-   pinMode(A0,INPUT);
-//   d1.init();
-//   d2.init();
-//   d3.init();
-//   d4.init();
+   pinMode(1,INPUT_PULLUP);
+   pinMode(0,OUTPUT);
+   digitalWrite(0,LOW);
+   d1.init();
+   d2.init();
+   d3.init();
+   d4.init();
 //   Serial.begin(9600);
 
 
@@ -80,7 +82,7 @@ void setup()
 
 bool buttonPress()
 {
-	return digitalRead(A0)==LOW;
+	return digitalRead(1)==LOW;
 }
 
 
@@ -185,11 +187,23 @@ void drawColumn(int player,int height)
 
 int convertHeight(float in)
 {
-	static int x = 16;
-	x--;
-	if (x==-1)
-		x=16;
-	return x;
+//	static int x = 16;
+	static const float MAX_HEIGHT = 30.0;
+	static const float OFFSET = 5.0;
+
+	//in is the reading
+	//small reading = more beer left
+
+
+
+	int ret = (int)((MAX_HEIGHT -in)*16.0/MAX_HEIGHT) - OFFSET;
+
+	if (ret > 16)
+		ret = 16;
+	if (ret < 0)
+		ret = 0;
+
+	return ret;
 }
 Player_t loopDrink()
 {
@@ -198,23 +212,40 @@ Player_t loopDrink()
 	int p3Height=0;
 	int p4Height=0;
 	int x=0;
+
+	//get start values
+
+	int p1Start = convertHeight(d1.measure());
+	int p2Start = convertHeight(d2.measure());
+	int p3Start = convertHeight(d3.measure());
+	int p4Start = convertHeight(d4.measure());
+	const int MIN_START = 4;
+	const int END = 0;
 	while (true)
 	{
 		x++;
 		dmd.clearScreen(true);
 
-		p1Height = convertHeight(1.0);
-		p2Height = convertHeight(1.0);
-		p3Height = convertHeight(1.0);
-		p4Height = convertHeight(1.0);
+		p1Height = convertHeight(d1.measure());
+		p2Height = convertHeight(d2.measure());
+		p3Height = convertHeight(d3.measure());
+		p4Height = convertHeight(d4.measure());
 
 		drawColumn(0,p1Height);
 		drawColumn(1,p2Height);
 		drawColumn(2,p3Height);
 		drawColumn(3,p4Height);
-		delay(100);
-		if (x >= 40)
+//		delay(100);
+		if ((p1Start > MIN_START) and (p1Height <= END))
 			return PLAYER_1;
+		if ((p2Start > MIN_START) and (p2Height <= END))
+			return PLAYER_2;
+		if ((p3Start > MIN_START) and (p3Height <= END))
+			return PLAYER_3;
+		if ((p4Start > MIN_START) and (p4Height <= END))
+			return PLAYER_4;
+
+		delay(50);
 	}
 	return PLAYER_1;
 
@@ -242,11 +273,13 @@ void loopWinner(Player_t winner)
 void loop()
 {
 	loopLogo();
+	mp3.SetPlayMode(PLAYMODE_SINGLE);
+	mp3.SelectTrack(2);
 	loopGetReady();
 	loop321();
 	Player_t winner = loopDrink();
 
-	mp3.SetPlayMode(PLAYMODE_SINGLE);
+//	mp3.SetPlayMode(PLAYMODE_SINGLE);
 	mp3.SelectTrack(1);
 	loopWinner(winner);
 
