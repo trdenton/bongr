@@ -11,6 +11,15 @@
 /* change these values if you have more than one DMD connected */
 DMD dmd(DISPLAYS_ACROSS,DISPLAYS_DOWN);
 
+typedef enum
+{
+	PLAYER_1,
+	PLAYER_2,
+	PLAYER_3,
+	PLAYER_4
+} Player_t;
+
+
 void ScanDMD()
 {
   dmd.scanDisplayBySPI();
@@ -150,36 +159,78 @@ void drawColumn(int player,int height)
 {
 	//32 pixels = 8 pixels wide each
 	int x1=player*8 + 0;
-	int y1=height;
+	int y1=16-height;
+	if (y1 < 0)
+		y1 = 0;
+	if (y1>16)
+		y1=16;
 	int x2=(player*8) +1;
-	int y2=0;
+	int y2=16;
 	dmd.drawFilledBox(  x1,  y1, x2, y2, GRAPHICS_NORMAL );
 }
-void loopDrink()
+
+int convertHeight(float in)
 {
+	static int x = 16;
+	x--;
+	if (x==-1)
+		x=16;
+	return x;
+}
+Player_t loopDrink()
+{
+	int p1Height = 0;
+	int p2Height = 0;
+	int p3Height=0;
+	int p4Height=0;
+	int x=0;
 	while (true)
 	{
+		x++;
 		dmd.clearScreen(true);
-		drawColumn(0,16);
-		drawColumn(1,8);
-		drawColumn(2,4);
-		drawColumn(3,1);
-		delay(500);
+
+		p1Height = convertHeight(1.0);
+		p2Height = convertHeight(1.0);
+		p3Height = convertHeight(1.0);
+		p4Height = convertHeight(1.0);
+
+		drawColumn(0,p1Height);
+		drawColumn(1,p2Height);
+		drawColumn(2,p3Height);
+		drawColumn(3,p4Height);
+		delay(100);
+		if (x >= 40)
+			return PLAYER_1;
 	}
+	return PLAYER_1;
 
 }
 
-void loopWinner()
+void loopWinner(Player_t winner)
 {
+	char string[15] = "PLAYER 0 WINS!";
+	string[7]=winner+'1';
 
+	dmd.clearScreen( true );
+	   dmd.selectFont(Arial_Black_16);
+	   dmd.drawMarquee(string,15,(32*DISPLAYS_ACROSS)-1,0);
+	   long start=millis();
+	   long timer=start;
+	   boolean ret=false;
+	   while(!ret){
+	     if ((timer+40) < millis()) {
+	       ret=dmd.stepMarquee(-1,0);
+	       timer=millis();
+	     }
+	   }
 }
 void loop()
 {
-//	loopLogo();
-//	loopGetReady();
-//	loop321();
-	loopDrink();
-	loopWinner();
+	loopLogo();
+	loopGetReady();
+	loop321();
+	Player_t winner = loopDrink();
+	loopWinner(winner);
 
 
 
