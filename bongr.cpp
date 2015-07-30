@@ -28,22 +28,51 @@ void ScanDMD()
 void setup()
 {
    Timer1.initialize( 5000 );
-/*period in microseconds to call ScanDMD. Anything longer than 5000 (5ms) and you can see flicker.*/
-
+///*period in microseconds to call ScanDMD. Anything longer than 5000 (5ms) and you can see flicker.*/
+//
    Timer1.attachInterrupt( ScanDMD );
-/*attach the Timer1 interrupt to ScanDMD which goes to dmd.scanDisplayBySPI()*/
-
+///*attach the Timer1 interrupt to ScanDMD which goes to dmd.scanDisplayBySPI()*/
+//
    dmd.clearScreen( true );
 /* true is normal (all pixels off), false is negative (all pixels on) */
 
-//   mp3.init();
+   Serial.begin(9600);
+   Serial.println("power on");
+   delay(1000);
+   Serial.println("init");
+
+
+   if (mp3.init()==false)
+   {
+	   Serial.println("wtf 1");
+   }
+
+//   if (mp3.SetPlayMode(PLAYMODE_SINGLE)==false)
+//   {
+//	   Serial.println("wtf 2");
+//   }
+
+//   if (mp3.SelectTrack(1)==false)
+//   {
+//	   Serial.println("wtf 3");
+//   }
+//   if (mp3.PauseResume()==false)
+//   {
+//	   Serial.println("wtf 2");
+//   }
+
+
+
+
+
+//   mp3.PauseResume();
 
    pinMode(A0,INPUT);
-   d1.init();
-   d2.init();
-   d3.init();
-   d4.init();
-   Serial.begin(9600);
+//   d1.init();
+//   d2.init();
+//   d3.init();
+//   d4.init();
+//   Serial.begin(9600);
 
 
 }
@@ -53,6 +82,13 @@ bool buttonPress()
 {
 	return digitalRead(A0)==LOW;
 }
+
+
+void playIAmTheChampion()
+{
+
+}
+
 
 void loopLogo(void)
 {
@@ -80,29 +116,7 @@ void loopLogo(void)
 
 
 }
-void displayReadyPlayer(int n)
-{
-	char string[16] = "READY PLAYER 0!";
-	string[13]=n+'0';
 
-	dmd.clearScreen( true );
-	   dmd.selectFont(Arial_Black_16);
-	   dmd.drawMarquee(string,15,(32*DISPLAYS_ACROSS)-1,0);
-	   long start=millis();
-	   long timer=start;
-	   boolean ret=false;
-	   while(!ret){
-	     if ((timer+20) < millis()) {
-	       ret=dmd.stepMarquee(-1,0);
-	       timer=millis();
-	     }
-	   }
-}
-
-void displayPlayerWins(int n)
-{
-
-}
 
 void loopGetReady()
 {
@@ -224,23 +238,18 @@ void loopWinner(Player_t winner)
 	     }
 	   }
 }
+
 void loop()
 {
 	loopLogo();
 	loopGetReady();
 	loop321();
 	Player_t winner = loopDrink();
+
+	mp3.SetPlayMode(PLAYMODE_SINGLE);
+	mp3.SelectTrack(1);
 	loopWinner(winner);
 
 
-
-
-
-
-//
-//	float dist = d1.measure();
-////	displayReadyPlayer(3);
-//	Serial.println(dist);
-//	delay(10);
 }
 

@@ -6,7 +6,7 @@
 #include "mp3.h"
 #include "Arduino.h"
 //SoftwareSerial mp3(2, 3);//modify this with the connector you are using.
-Mp3Player mp3(2,3);
+Mp3Player mp3(4,5);
 Mp3Player::Mp3Player(int rx, int tx)
 	:SoftwareSerial(rx,tx)
 {
@@ -16,14 +16,15 @@ bool Mp3Player::init()
 {
 
 	begin(9600);
-	delay(100);
+//	delay(100);
 	if (SetPlayMode(PLAYMODE_SINGLE)!=true)
 	{
 
 		return false;
 
 	}
-	PauseResume();
+	delay(10);
+//	return PauseResume();
 	return true;
 
 }
@@ -98,13 +99,13 @@ bool Mp3Player::SetPlayMode(PlayMode_t playmode)
 {
   if (((playmode==PLAYMODE_SINGLE)|(playmode==PLAYMODE_REPEAT)|(playmode==PLAYMODE_PLAYLIST)|(playmode==PLAYMODE_RANDOM))==false)
   {
-//    Serial.println("PlayMode Parameter Error! ");
+    Serial.println("PlayMode Parameter Error! ");
     return false;
   }
    write(0x7E);
  write(0x03);
  write(0xA9);
- write(playmode);
+ write((uint8_t)playmode);
  write(0x7E);
  delay(10);
  while(available())
