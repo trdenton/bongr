@@ -246,6 +246,8 @@ Player_t loopDrink()
 			return PLAYER_4;
 
 		delay(50);
+		if (buttonPress())
+			return PLAYER_1;
 	}
 	return PLAYER_1;
 
@@ -272,15 +274,53 @@ void loopWinner(Player_t winner)
 
 void loop()
 {
+	//1 homer
+	//2 danger
+	//3 fatality
+	//4 acdc
+
 	loopLogo();
 	mp3.SetPlayMode(PLAYMODE_SINGLE);
-	mp3.SelectTrack(2);
+
+	static int song = 0;
+
+	switch (song)
+	{
+	case 0:
+		mp3.SelectTrack(2);
+		break;
+	case 1:
+		mp3.SelectTrack(4);
+		break;
+	case 2:
+		mp3.SelectTrack(5);
+		break;
+	case 3:
+		mp3.SelectTrack(7);
+		break;
+	}
+	song = (song + 1)%4;
 	loopGetReady();
 	loop321();
 	Player_t winner = loopDrink();
 
 //	mp3.SetPlayMode(PLAYMODE_SINGLE);
-	mp3.SelectTrack(1);
+
+	static int winSound = 0;
+
+	switch (winSound)
+	{
+	case 0:
+		mp3.SelectTrack(1);
+		break;
+	case 1:
+		mp3.SelectTrack(3);
+		break;
+	case 2:
+		mp3.SelectTrack(6);
+		break;
+	}
+	winSound = (winSound + 1 )%3;
 	loopWinner(winner);
 
 
