@@ -245,7 +245,7 @@ Player_t loopDrink()
 		if ((p4Start > MIN_START) and (p4Height <= END))
 			return PLAYER_4;
 
-		delay(50);
+		delay(25);
 		if (buttonPress())
 			return PLAYER_1;
 	}
