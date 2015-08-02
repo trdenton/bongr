@@ -188,15 +188,18 @@ void drawColumn(int player,int height)
 int convertHeight(float in)
 {
 //	static int x = 16;
-	static const float MAX_HEIGHT = 30.0;
-	static const float OFFSET = 5.0;
+//	static const float MAX_HEIGHT = 43;
+//	static const float OFFSET = 23.75;
+
 
 	//in is the reading
 	//small reading = more beer left
 
+	//values based on calibration
+	float slope = (0.0 - 16.0)/(43.0  -23.75);
+	float intercept = 35.75;
 
-
-	int ret = (int)((MAX_HEIGHT -in)*16.0/MAX_HEIGHT) - OFFSET;
+	int ret = (int)(slope*in + intercept);
 
 	if (ret > 16)
 		ret = 16;
@@ -220,7 +223,7 @@ Player_t loopDrink()
 	int p3Start = convertHeight(d3.measure());
 	int p4Start = convertHeight(d4.measure());
 	const int MIN_START = 4;
-	const int END = 0;
+	const int END = 1;
 	while (true)
 	{
 		x++;
